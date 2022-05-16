@@ -3,7 +3,7 @@ Finite difference solver for 1d scalar
 wave equation with perfectly matched layer(PML)
 
 @author: zchen
-@date: 2022-05-23
+@date: 2022-04-23
 @reference: https://github.com/ar4/wave_1d_fd_pml/
 """
 

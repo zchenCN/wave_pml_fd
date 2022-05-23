@@ -7,6 +7,7 @@ wave equation with perfectly matched layer(PML)
 """
 
 import numpy as np 
+import tqdm
 
 def ricker(dt, nt, peak_time, dominant_freq):
     """Ricker wavelet with specific dominant frequency"""
@@ -69,7 +70,6 @@ class Solver:
         # wavefield
         self.prev_wavefield = np.zeros((self.nptz_padded, self.nptx_padded), np.float64) # previous wavefield
         self.cur_wavefield = np.zeros((self.nptz_padded, self.nptx_padded), np.float64) # current wavefield
-        self.wavefield = []
 
         # auxiliary function
         self.cur_psi = np.zeros((self.nptz_padded, self.nptx_padded), np.float64)
@@ -192,12 +192,15 @@ class Solver:
 
         return next_wavefield, next_phi, next_psi
 
-    def step(self):
-        for nt in range(len(self.source_time)):
+    def step(self, save_nt=None):
+        self.wavefield = list()
+        for nt in tqdm.tqdm(range(len(self.source_time)), desc='Propagating:'):
             next_wavefield, next_phi, next_psi = self.one_step(nt)
             self.cur_wavefield, self.prev_wavefield = next_wavefield, self.cur_wavefield 
             self.cur_phi, self.cur_psi = next_phi, next_psi 
-            self.wavefield.append(next_wavefield[self.total_pad:-self.total_pad, self.total_pad:-self.total_pad])
+            if save_nt is None or nt in save_nt:
+                self.wavefield.append(next_wavefield[self.total_pad:-self.total_pad, self.total_pad:-self.total_pad])
+
 
 
 if __name__ == '__main__':
